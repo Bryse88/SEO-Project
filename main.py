@@ -8,8 +8,9 @@ proxied =FlaskBehindProxy(app)
 
 
 @app.route('/', methods=['GET','POST'])
-@app.route('/home')
-
+@app.route('/register', methods=['GET', 'POST'])
+def regiser():
+    return render_template('register.html')
 def home():
     return render_template('index.html')
 
