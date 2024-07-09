@@ -1,16 +1,41 @@
 {% extends "header.html" %}
 {% block content %}
-<div class ="feedback-input">
+<div class="feedback-input">
     <h1>Type your Email & Password below</h1>
-    <form method ='POST' action="">
-  
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
 
-    <input name="username" type ="text" class ="feedback-input" placeholder="Username"/>
-    <input name="email" type="text" class="feedback-input" placeholder="Email" />
-    <input name="pass" type="text" class="feedback-input" placeholder="Password" />
-    <input name="confirm-pass" type="text" class="feedback-input" placeholder="Confirm Password" />
-    <input type="submit" value="SUBMIT" />
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(class="feedback-input", placeholder="Username") }}<br>
+            {% for error in form.username.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.email.label }}<br>
+            {{ form.email(class="feedback-input", placeholder="Email") }}<br>
+            {% for error in form.email.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.password.label }}<br>
+            {{ form.password(class="feedback-input", placeholder="Password") }}<br>
+            {% for error in form.password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.confirm_password.label }}<br>
+            {{ form.confirm_password(class="feedback-input", placeholder="Confirm Password") }}<br>
+            {% for error in form.confirm_password.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit(class="btn btn-primary") }}</p>
     </form>
+</div>
 
 {% endblock content %}
 {% extends "footer.html" %}
