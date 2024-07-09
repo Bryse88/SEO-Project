@@ -1,0 +1,16 @@
+{% extends "header.html" %}
+{% block content %}
+<div class ="feedback-input">
+    <h1>Type your Email & Password below</h1>
+    <form method ='POST' action="">
+  
+
+    <input name="username" type ="text" class ="feedback-input" placeholder="Username"/>
+    <input name="email" type="text" class="feedback-input" placeholder="Email" />
+    <input name="pass" type="text" class="feedback-input" placeholder="Password" />
+    <input name="confirm-pass" type="text" class="feedback-input" placeholder="Confirm Password" />
+    <input type="submit" value="SUBMIT" />
+    </form>
+
+{% endblock content %}
+{% extends "footer.html" %}
