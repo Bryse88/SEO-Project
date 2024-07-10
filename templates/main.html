@@ -1,6 +1,7 @@
-{% extends "./content/header.html" %}
-{% block content %}
-<h1>Login to see my To Do List</h1>
+{% extends "layout.html" %}
+
+  {% block content %}
+<h1>Let's Tweet</h1>
     <div>
     
         <form action="/check" method="POST">
@@ -15,4 +16,4 @@
         </form>
     </div>
 {% endblock content %}
-{% extends "footer.html" %} 
+
