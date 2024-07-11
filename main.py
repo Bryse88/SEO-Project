@@ -81,29 +81,39 @@ def create_event_form():
 
 @app.route('/create_event', methods=['POST'])
 def create_event():
-    summary = request.form['summary']
     description = request.form['description']
-    start = request.form['start']
-    end = request.form['end']
+    publish_to_calendar = 'publishToCalendar' in request.form
 
-    event = {
-        'summary': summary,
-        'description': description,
-        'start': {
-            'dateTime': start,
-            'timeZone': 'America/Chicago'
-        },
-        'end': {
-            'dateTime': end,
-            'timeZone': 'America/Chicago'
+    # Save the note
+    # You can add code here to save the note to your preferred storage (database, file, etc.)
+    flash(f'Note added: {description}', 'success')
+
+    if publish_to_calendar:
+        summary = request.form['summary']
+        start = request.form['start']
+        end = request.form['end']
+
+        event = {
+            'summary': summary,
+            'description': description,
+            'start': {
+                'dateTime': start,
+                'timeZone': 'America/Chicago'
+            },
+            'end': {
+                'dateTime': end,
+                'timeZone': 'America/Chicago'
+            }
         }
-    }
 
-    credentials = Credentials(session['google_token'][0])
-    service = build('calendar', 'v3', credentials=credentials)
-    event = service.events().insert(calendarId='primary', body=event).execute()
+        credentials = Credentials(session['google_token'][0])
+        service = build('calendar', 'v3', credentials=credentials)
+        event = service.events().insert(calendarId='primary', body=event).execute()
 
-    return f'Event created: {event.get("htmlLink")}'
+        flash(f'Event created: {event.get("htmlLink")}', 'success')
+
+    return redirect(url_for('notes'))
+
 
 @google.tokengetter
 def get_google_oauth_token():

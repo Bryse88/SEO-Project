@@ -1,11 +1,34 @@
-
 {% extends "layout.html" %}
 {% block title %}Notes{% endblock %}
 {% block content %}
 <h1>Notes App</h1>
-<form id="noteForm">
-    <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+<form id="noteForm" action="{{ url_for('create_event') }}" method="post">
+    <textarea id="noteInput" name="description" placeholder="Write your note here..." required></textarea>
+    <br>
+    <input type="checkbox" id="publishToCalendar" name="publishToCalendar">
+    <label for="publishToCalendar">Publish to Google Calendar</label>
+    <div id="calendarInputs" style="display: none;">
+        <label for="summary">Event Title:</label>
+        <input type="text" name="summary" id="summary" class="feedback-input"><br>
+
+        <label for="start">Start Date and Time:</label>
+        <input type="datetime-local" id="start" name="start" class="feedback-input"><br>
+
+        <label for="end">End Date and Time:</label>
+        <input type="datetime-local" id="end" name="end" class="feedback-input"><br>
+    </div>
     <button type="submit">Add Note</button>
 </form>
 <ul id="notesList"></ul>
+
+<script>
+    document.getElementById('publishToCalendar').addEventListener('change', function() {
+        var calendarInputs = document.getElementById('calendarInputs');
+        if (this.checked) {
+            calendarInputs.style.display = 'block';
+        } else {
+            calendarInputs.style.display = 'none';
+        }
+    });
+</script>
 {% endblock %}
