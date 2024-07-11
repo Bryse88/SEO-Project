@@ -1,12 +1,14 @@
 html,
 body {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
   display: flex;
   flex-direction: column;
-  justify-content: stretch;
+  justify-content: space-between;
 }
 
 header,
@@ -34,6 +36,7 @@ p {
   object-fit: cover;
   border-radius: 50%;
 }
+
 form {
   margin-top: 50px;
 }
@@ -78,6 +81,41 @@ textarea {
   margin-top: -4px;
   font-weight: 700;
 }
+
 [type="submit"]:hover {
   background: #3586ff;
+}
+
+footer {
+  background: #f8f9fa;
+  padding: 20px 0;
+  text-align: center;
+}
+
+footer .waves {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  margin-bottom: -7px; /* Adjust based on your wave design */
+  min-height: 100px;
+  max-height: 150px;
+}
+
+footer .wave {
+  position: absolute;
+  top: -50px; /* Adjust based on your wave design */
+  width: 100%;
+  height: 100px;
+  background: url('wave.png'); /* Replace with your wave image */
+  background-size: 1000px 100px;
+  animation: animateWaves 4s linear infinite;
+}
+
+@keyframes animateWaves {
+  0% {
+    background-position-x: 0;
+  }
+  100% {
+    background-position-x: 1000px;
+  }
 }
