@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="feedback-input">
-    <h1>Type your Email & Password below</h1>
+    <h1>Please enter your Email & Password</h1>
     <form method="POST" action="">
         {{ form.hidden_tag() }}
 
@@ -34,7 +34,8 @@
                 <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-        <p>{{ form.submit(class="btn btn-primary") }}</p>
+        <p>{{ form.submit(class="feedback-input " ) }}</p>
+        <!-- btn btn-primary -->
     </form>
 </div>
 

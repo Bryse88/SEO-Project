@@ -35,7 +35,7 @@ main {
 }
 .navbar-nav .nav-link:hover {
     color: #fff; /* Change text color on hover */
-    background-color: #0066cc; /* Change background color on hover */
+    background-color: transparent; /* Change background color on hover */
     transition: all 0.3s ease; /* Smooth transition for hover effect */
 }
 
@@ -199,7 +199,7 @@ footer {
   width: 100%;
   background: #3586ff;
   min-height: 100px;
-  padding: 20px 50px;
+  padding: cover;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -261,11 +261,14 @@ p {
 footer .wave {
   position: absolute;
   top: -100px;
-  left: 0;
+  left: 0px;
+  right: 0px;
   width: 100%;
   height: 100px;
   background: url(https://i.ibb.co/rZt4Nhg/wave.png);
-  background-size: 1000px 100px;
+  /* background-size: 1000px 100px; */
+ background-size: 1000px 100px;
+  background-position: center;
 }
 
 footer .wave#wave1 {

@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/content.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='content.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='layout.css') }}">
        
         {{ bootstrap.load_css() }}
@@ -18,7 +18,7 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-custom navbar-mainbg">
-            <a class="navbar-brand navbar-logo" href="{{ url_for('index') }}">My App</a>
+            <a class="navbar-brand navbar-logo" href="#">My App</a>
             <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fas fa-bars text-white"></i>
             </button>
@@ -64,10 +64,10 @@
             <li><a href="https://en.wikipedia.org/wiki/Trollface#/media/File:Trollface_non-free.png"><ion-icon name="logo-instagram"></ion-icon></a></li>
             <li><a href="https://www.youtube.com/playlist?list=PLu_YdyFu0vThxTJ_iHdm23cBvxtRySG0Y"><ion-icon name="logo-youtube"></ion-icon></a></li>
         </ul>
-        <ul class="menu">
+        <!-- <ul class="menu">
             <li><a href="{{ url_for('index') }}">Home</a></li>
             <li><a href="{{ url_for('about') }}">About</a></li>
-        </ul>
+        </ul> -->
         <p class="copyright">From My App with ❤️.</p>
     </footer>
     {% endblock %}
