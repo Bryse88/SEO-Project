@@ -113,6 +113,7 @@ def create_event():
         flash(f'Event created: {event.get("htmlLink")}', 'success')
 
     return redirect(url_for('notes'))
+    
 
 
 @google.tokengetter
