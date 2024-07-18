@@ -1,23 +1,32 @@
-
 {% extends "layout.html" %}
 {% block content %}
 <h1>Create New Event</h1>
-    <div class = "feedback-input">
+<div class="feedback-input">
     <form action="{{ url_for('create_event') }}" method="post">
         <label for="summary">Event Title:</label>
         <input type="text" name="summary" class="feedback-input" required><br>
 
         <label for="description">Description:</label>
-        <textarea id="description" name="description" class= "feedback-input" required></textarea><br>
+        <textarea id="description" name="description" class="feedback-input" required></textarea><br>
 
         <label for="start">Start Date and Time:</label>
-        <input type="datetime-local" id="start" name="start"  class = "feedback-input" required><br>
+        <input type="datetime-local" id="start" name="start" class="feedback-input" required><br>
 
         <label for="end">End Date and Time:</label>
-        <input type="datetime-local" id="end" name="end" class = "feedback-input"  required><br>
+        <input type="datetime-local" id="end" name="end" class="feedback-input" required><br>
+
+        <label for="importance">Importance:</label>
+        <select id="importance" name="importance" class="feedback-input" required>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+        </select><br>
+
+        <label for="publishToCalendar">Publish to Calendar:</label>
+        <input type="checkbox" id="publishToCalendar" name="publishToCalendar"><br>
 
         <button type="submit">Create Event</button>
     </form>
-    </div>
-    <!-- <a href="{{ url_for('logout') }}">Logout</a> -->
+</div>
+<!-- <a href="{{ url_for('logout') }}">Logout</a> -->
 {% endblock content %}
