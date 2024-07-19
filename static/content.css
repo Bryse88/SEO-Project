@@ -132,3 +132,33 @@ footer .wave {
     background-position-x: 1000px;
   }
 }
+/* Added below for notes */
+
+ul#notesList {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul#notesList li {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+ul#notesList li button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+ul#notesList li button:hover {
+  background-color: #c82333;
+}
