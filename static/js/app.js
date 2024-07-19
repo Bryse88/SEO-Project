@@ -1,4 +1,3 @@
-
 document.getElementById('noteForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -19,6 +18,7 @@ function addNoteToList(noteText) {
 
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
+    deleteButton.style.marginLeft = '10px';
     deleteButton.addEventListener('click', function() {
         deleteNoteFromServer(noteText);
         li.remove();
