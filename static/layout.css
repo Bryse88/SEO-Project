@@ -63,6 +63,7 @@ main {
   float: left;
   opacity:1;
   color: #fff
+
 }
 #navbarSupportedContent ul li a {
   color: rgba(255, 255, 255, 0.5);
@@ -107,6 +108,9 @@ main {
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
   margin-top: 10px;
+}
+.hori-selector :hover {
+  font-size: 2em;
 }
 .hori-selector .right,
 .hori-selector .left {
@@ -197,8 +201,9 @@ main {
 footer {
   position: relative;
   width: 100%;
-  background: #3586ff;
+  background:#3586ff;;
   min-height: 100px;
+  /* height: 100px; */
   padding: cover;
   display: flex;
   flex-direction: column;
@@ -221,7 +226,7 @@ footer .menu li {
   list-style: none;
 }
 footer .social_icon li a {
-  font-size: 2em;
+  font-size: 1em;
   color: #ccc;
   margin: 0 10px;
   display: inline-block;
@@ -230,6 +235,7 @@ footer .social_icon li a {
 footer .social_icon li a:hover {
   transform: translateY(-15px);
   color: blue;
+  font-size: 3em;
 }
 
 footer .menu li a {

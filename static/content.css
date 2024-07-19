@@ -77,7 +77,7 @@ textarea {
 }
 
 [type="submit"] {
-  width: 50%;
+  width: 20%;
   background: #3586ff;
   border-radius: 5px;
   border: 0;
@@ -137,28 +137,50 @@ footer .wave {
 ul#notesList {
   list-style-type: none;
   padding: 0;
+
 }
 
 ul#notesList li {
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
+  background-color: white;
+  border: 1px solid  #3586ff;
   border-radius: 5px;
-  padding: 10px;
+  padding: cover;
+  margin-top: 10px;
   margin-bottom: 10px;
-  display: flex;
   justify-content: space-between;
-  align-items: center;
+  /* align-items:flex-start */
+  display: flex;
+
 }
 
 ul#notesList li button {
+  display: inline-block;
   background-color: #dc3545;
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 5px 10px;
+  padding: 10px 10px;
   cursor: pointer;
+  margin: 10px;
+
 }
 
 ul#notesList li button:hover {
-  background-color: #c82333;
+  background-color: #23c82e;
+  transition: all 0.7s;
+  
+}
+ul#notesList li input{
+
+  width: 60%;
+  border: none;
+  margin: 10px;
+  border-radius: 5px;
+  background-color: white;
+
+}
+
+ul#notesList li p {
+  margin: 10px;
+  color: black;
 }
