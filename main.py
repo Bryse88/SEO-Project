@@ -1,19 +1,26 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, redirect, url_for, session, request, render_template, flash
+from flask import Flask, redirect, url_for, session, request, render_template, flash, jsonify
 from flask_oauthlib.client import OAuth
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from forms import RegistrationForm
 from flask_behind_proxy import FlaskBehindProxy
-from flask_bootstrap import Bootstrap4
+from flask_bootstrap import Bootstrap
+from flask_cors import CORS
 import secrets
+
 load_dotenv()
 app = Flask(__name__)
-bootstrap = Bootstrap4(app)
+CORS(app)
+bootstrap = Bootstrap(app)
 proxied = FlaskBehindProxy(app)
 app.config['SECRET_KEY'] = secrets.token_hex(16)
 oauth = OAuth(app)
+
+# In-memory notes storage for simplicity
+notes_storage = []
+
 google = oauth.remote_app(
     'google',
     consumer_key=os.getenv('GOOGLE_CLIENT_ID'),
@@ -28,6 +35,27 @@ google = oauth.remote_app(
     access_token_url='https://accounts.google.com/o/oauth2/token',
     authorize_url='https://accounts.google.com/o/oauth2/auth',
 )
+
+
+@app.route('/add_note', methods=['POST'])
+def add_note():
+    note = request.json.get('note')
+    if note:
+        notes_storage.append(note)
+        return jsonify({'status': 'success', 'note': note}), 201
+    return jsonify({'status': 'failure', 'message': 'Note is required'}), 400
+
+@app.route('/delete_note', methods=['POST'])
+def delete_note():
+    note = request.json.get('note')
+    if note in notes_storage:
+        notes_storage.remove(note)
+        return jsonify({'status': 'success', 'note': note}), 200
+    return jsonify({'status': 'failure', 'message': 'Note not found'}), 400
+
+@app.route('/get_notes', methods=['GET'])
+def get_notes():
+    return jsonify({'notes': notes_storage}), 200
 
 @app.route('/')
 def index():
@@ -119,6 +147,7 @@ def create_event():
             flash(f'An error occurred: {e}', 'error')
             return redirect(url_for('notes'))
     return redirect(url_for('notes'))
+
 @google.tokengetter
 def get_google_oauth_token():
     return session.get('google_token')
