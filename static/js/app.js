@@ -19,7 +19,7 @@ function addNoteToList(noteText) {
 
     const noteSpan = document.createElement('p');
     noteSpan.textContent = noteText;
-    noteSpan.classList.add('noteSpan'); // Add this line
+    noteSpan.classList.add('noteSpan'); 
 
     const noteInput = document.createElement('input');
     noteInput.type = 'text';

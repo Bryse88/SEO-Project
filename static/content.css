@@ -132,7 +132,7 @@ footer .wave {
     background-position-x: 1000px;
   }
 }
-/* Added below for notes */
+
 
 ul#notesList {
   list-style-type: none;
@@ -146,9 +146,7 @@ ul#notesList li {
   border-radius: 5px;
   padding: cover;
   margin-top: 10px;
-  margin-bottom: 10px;
   justify-content: space-between;
-  /* align-items:flex-start */
   display: flex;
 
 }
@@ -174,7 +172,7 @@ ul#notesList li input{
 
   width: 60%;
   border: none;
-  margin: 10px;
+  padding: 0;
   border-radius: 5px;
   background-color: white;
 
@@ -182,5 +180,6 @@ ul#notesList li input{
 
 ul#notesList li p {
   margin: 10px;
+  padding-top: 10px;
   color: black;
 }
