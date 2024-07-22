@@ -11,6 +11,7 @@ document.getElementById('noteForm').addEventListener('submit', function(e) {
     }
 });
 
+
 let noteId = 0;
 
 function addNoteToList(noteText) {
@@ -29,7 +30,7 @@ function addNoteToList(noteText) {
     const buttonsDiv = document.createElement('div');
     buttonsDiv.classList.add('buttonsDiv');
 
-    const deleteButton = document.createElement('button');
+    const deleteButton = document.createElement('deleteButton');
     deleteButton.textContent = 'Delete';
     deleteButton.id = `deleteButton-${noteId}`;
     deleteButton.classList.add('deleteButton');
@@ -38,7 +39,7 @@ function addNoteToList(noteText) {
         li.remove();
     });
 
-    const editButton = document.createElement('button');
+    const editButton = document.createElement('editButton');
     editButton.textContent = 'Edit';
     editButton.id = `editButton-${noteId}`;
     editButton.classList.add('editButton');
@@ -49,7 +50,7 @@ function addNoteToList(noteText) {
         saveButton.style.display = 'inline-block';
     });
 
-    const saveButton = document.createElement('button');
+    const saveButton = document.createElement('saveButton');
     saveButton.textContent = 'Save';
     saveButton.classList.add('saveButton');
     saveButton.style.display = 'none';
@@ -115,6 +116,33 @@ function updateNoteOnServer(oldNoteText, newNoteText) {
         console.log(data);
     });
 }
+//Added everything below this for collaboration.
+document.getElementById('inviteCollaboratorBtn').addEventListener('click', function() {
+    const invitee = document.getElementById('inviteeInput').value;
+    inviteCollaborator(invitee);
+});
+function fetchNotes() {
+    fetch('/get_notes')
+        .then(response => response.json())
+        .then(data => {
+            const notesList = document.getElementById('notesList');
+            notesList.innerHTML = ''; // Clear existing notes
+            data.notes.forEach(note => addNoteToList(note.text, note.author));
+        });
+}
+function inviteCollaborator(invitee) {
+    fetch('/invite_collaborator', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ invitee: invitee })
+    }).then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });
+}
+
 
 window.onload = function() {
     fetch('/get_notes')
