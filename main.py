@@ -1,3 +1,6 @@
+
+# Note: changes were only made to app.js and notes.html, more info can be found there.
+
 import os
 from dotenv import load_dotenv
 from flask import Flask, redirect, url_for, session, request, render_template, flash, jsonify
