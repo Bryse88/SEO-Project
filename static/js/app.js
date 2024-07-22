@@ -5,7 +5,7 @@ document.getElementById('noteForm').addEventListener('submit', function(e) {
     const noteText = noteInput.value;
 
     if (noteText.trim()) {
-        addNoteToList(noteText);
+        addNoteToList(noteText, 'You');
         saveNoteToServer(noteText);
         noteInput.value = '';
     }
@@ -13,13 +13,13 @@ document.getElementById('noteForm').addEventListener('submit', function(e) {
 
 let noteId = 0;
 
-function addNoteToList(noteText) {
+function addNoteToList(noteText, author) {
     const notesList = document.getElementById('notesList');
     const li = document.createElement('li');
 
     const noteSpan = document.createElement('p');
-    noteSpan.textContent = noteText;
-    noteSpan.classList.add('noteSpan'); 
+    noteSpan.textContent = `${noteText} (by ${author})`;
+    noteSpan.classList.add('noteSpan');
 
     const noteInput = document.createElement('input');
     noteInput.type = 'text';
@@ -29,19 +29,19 @@ function addNoteToList(noteText) {
     const buttonsDiv = document.createElement('div');
     buttonsDiv.classList.add('buttonsDiv');
 
-    const deleteButton = document.createElement('button');
+    const deleteButton = document.createElement('deleteButton');
     deleteButton.textContent = 'Delete';
     deleteButton.id = `deleteButton-${noteId}`;
-    deleteButton.classList.add('deleteButton');
+    deleteButton.classList.add('deleteButton'); // Add this line
     deleteButton.addEventListener('click', function() {
         deleteNoteFromServer(noteText);
         li.remove();
     });
 
-    const editButton = document.createElement('button');
+    const editButton = document.createElement('editButton');
     editButton.textContent = 'Edit';
     editButton.id = `editButton-${noteId}`;
-    editButton.classList.add('editButton');
+    editButton.classList.add('editButton'); // Add this line
     editButton.addEventListener('click', function() {
         noteSpan.style.display = 'none';
         noteInput.style.display = 'inline-block';
@@ -49,7 +49,7 @@ function addNoteToList(noteText) {
         saveButton.style.display = 'inline-block';
     });
 
-    const saveButton = document.createElement('button');
+    const saveButton = document.createElement('saveButton');
     saveButton.textContent = 'Save';
     saveButton.classList.add('saveButton');
     saveButton.style.display = 'none';
@@ -57,7 +57,7 @@ function addNoteToList(noteText) {
         const newNoteText = noteInput.value;
         if (newNoteText && newNoteText.trim() !== '' && newNoteText !== noteText) {
             updateNoteOnServer(noteText, newNoteText);
-            noteSpan.textContent = newNoteText;
+            noteSpan.textContent = `${newNoteText} (by ${author})`;
             noteText = newNoteText; 
         }
         noteSpan.style.display = 'inline-block';
@@ -116,10 +116,36 @@ function updateNoteOnServer(oldNoteText, newNoteText) {
     });
 }
 
-window.onload = function() {
+function fetchNotes() {
     fetch('/get_notes')
         .then(response => response.json())
         .then(data => {
-            data.notes.forEach(note => addNoteToList(note));
+            const notesList = document.getElementById('notesList');
+            notesList.innerHTML = ''; // Clear existing notes
+            data.notes.forEach(note => addNoteToList(note.text, note.author));
         });
+}
+
+// Fetch notes initially and then periodically
+window.onload = function() {
+    fetchNotes();
+    setInterval(fetchNotes, 5000); // Fetch notes every 5 seconds
 };
+
+document.getElementById('inviteCollaboratorBtn').addEventListener('click', function() {
+    const invitee = document.getElementById('inviteeInput').value;
+    inviteCollaborator(invitee);
+});
+
+function inviteCollaborator(invitee) {
+    fetch('/invite_collaborator', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ invitee: invitee })
+    }).then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });
+}
