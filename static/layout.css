@@ -234,7 +234,7 @@ footer .social_icon li a {
 }
 footer .social_icon li a:hover {
   transform: translateY(-15px);
-  color: blue;
+  color: rgb(229, 20, 20);
   font-size: 3em;
 }
 
