@@ -2,17 +2,14 @@
 <html lang="en">
 <head>
     {% block head %}
-        {% block styles %}
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='content.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='layout.css') }}">
-       
-        {{ bootstrap.load_css() }}
-        <title>My App</title>
-        {% endblock %}
+        <title>{% block title %}My App{% endblock %}</title>
+        {% block styles %}{% endblock %}
     {% endblock %}
 </head>
 <body>
@@ -31,12 +28,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('about') }}"><i class="far fa-clone"></i>About</a>
                     </li>
-                    <!-- <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('notes') }}"><i class="far fa-sticky-note"></i>Notes</a>
-                    </li> -->
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('create_event_form') }}"><i class="far fa-calendar-alt"></i>Create Event</a>
-                    </li> -->
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('Dashboard') }}"><i class="far fa-sticky-note"></i>Notes</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('logout') }}"><i class="far fa-user"></i>Logout</a>
                     </li>
@@ -45,11 +42,10 @@
         </nav>
     </header>
     <main>
-    
+        <div class="container">
             {% block content %}{% endblock %}
-       
+        </div>
     </main>
-    {% block footer %}
     <footer>
         <div class="waves">
             <div class="wave" id="wave1"></div>
@@ -59,20 +55,17 @@
         </div>
         <ul class="social_icon">
             <li><a href="https://calendar.google.com/calendar/u/0/r"><ion-icon name="logo-chrome"></ion-icon></a></li>
-            
             <li><a href="https://www.linkedin.com/school/seousa/"><ion-icon name="logo-linkedin"></ion-icon></a></li>
             <li><a href="https://en.wikipedia.org/wiki/Trollface#/media/File:Trollface_non-free.png"><ion-icon name="logo-twitter"></ion-icon></a></li>
             <li><a href="https://en.wikipedia.org/wiki/Trollface#/media/File:Trollface_non-free.png"><ion-icon name="logo-instagram"></ion-icon></a></li>
             <li><a href="https://www.youtube.com/playlist?list=PLu_YdyFu0vThxTJ_iHdm23cBvxtRySG0Y"><ion-icon name="logo-youtube"></ion-icon></a></li>
         </ul>
         <ul class="menu">
-            <!-- <li><a href="{{ url_for('index') }}">Home</a></li>
-            <li><a href="{{ url_for('about') }}">About</a></li> -->
-           <!-- <li> <a href="{{ url_for('login') }}">Login with Google</a> <li> -->
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('about') }}">About</a></li>
         </ul>
         <p class="copyright">From My App with ❤️.</p>
     </footer>
-    {% endblock %}
     {% block scripts %}
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
