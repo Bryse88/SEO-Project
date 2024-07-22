@@ -147,7 +147,35 @@ def create_event():
             flash(f'An error occurred: {e}', 'error')
             return redirect(url_for('notes'))
     return redirect(url_for('notes'))
+def get_openai_suggestion(events, summary, category):
+    events_summary = "\n".join([f"{event['start']['dateTime']} to {event['end']['dateTime']}: {event['summary']}" for event in events])
+    prompt = f"""
+    You are an intelligent assistant. Here are the existing events in the user's calendar:
+    {events_summary}
 
+    The user wants to add a new event with the following details:
+    Summary: {summary}
+    Category: {category}
+
+    Please suggest the optimal start and end time for this new event based on the user's current schedule and the category of the event.
+    """
+    
+    response = openai.Completion.create(
+        engine="davinci",
+        prompt=prompt,
+        max_tokens=150
+    )
+    
+    suggested_time_text = response.choices[0].text.strip()
+    suggested_time = parse_suggested_time(suggested_time_text)
+    return {'suggested_time': suggested_time}
+
+def parse_suggested_time(text):
+    # A simple parser to extract start and end time from OpenAI's response
+    lines = text.split("\n")
+    start = lines[0].split("Start: ")[1].strip()
+    end = lines[1].split("End: ")[1].strip()
+    return {'start': start, 'end': end}
 @google.tokengetter
 def get_google_oauth_token():
     return session.get('google_token')

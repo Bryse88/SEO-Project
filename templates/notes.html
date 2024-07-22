@@ -19,6 +19,18 @@
 
         <label for="end">End Date and Time:</label>
         <input type="datetime-local" id="end" name="end" class="feedback-input"><br>
+        <label for="category">Category:</label>
+        <select id="category" name="category" class="feedback-input">
+            <option value="class">Class</option>
+            <option value="study">Study Session</option>
+            <option value="meeting">Meeting</option>
+            <option value="project">Project Work</option>
+            <option value="break">Break</option>
+            <option value="personal">Personal Task</option>
+        </select><br>
+
+        <label for="useAiSuggestion">Use AI to Suggest Time:</label>
+        <input type="checkbox" id="useAiSuggestion" name="useAiSuggestion"><br>
     </div>
     <button type="submit">Add Note</button>
 </form>
