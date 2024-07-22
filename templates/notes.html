@@ -22,6 +22,10 @@
     </div>
     <button type="submit">Add Note</button>
 </form>
+
+<button id="inviteCollaboratorBtn">Invite Collaborator</button>
+<input type="text" id="inviteeInput" placeholder="Enter email to invite">
+
 <ul id="notesList"></ul>
 
 <script>
@@ -33,6 +37,24 @@
             calendarInputs.style.display = 'none';
         }
     });
+
+    document.getElementById('inviteCollaboratorBtn').addEventListener('click', function() {
+        const invitee = document.getElementById('inviteeInput').value;
+        inviteCollaborator(invitee);
+    });
+
+    function inviteCollaborator(invitee) {
+        fetch('/invite_collaborator', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ invitee: invitee })
+        }).then(response => response.json())
+        .then(data => {
+            console.log(data);
+        });
+    }
 </script>
 <script src=static/js/app.js></script>
 {% endblock %}
