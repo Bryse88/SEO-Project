@@ -1,3 +1,5 @@
+//Note: I changed the button variable to be three different buttons, saveButton, editButton, and deleteButton for styling in CSS
+
 document.getElementById('noteForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -29,7 +31,7 @@ function addNoteToList(noteText, author) {
     const buttonsDiv = document.createElement('div');
     buttonsDiv.classList.add('buttonsDiv');
 
-    const deleteButton = document.createElement('deleteButton');
+    const deleteButton = document.createElement('deleteButton'); // Here for example
     deleteButton.textContent = 'Delete';
     deleteButton.id = `deleteButton-${noteId}`;
     deleteButton.classList.add('deleteButton'); // Add this line
@@ -115,7 +117,7 @@ function updateNoteOnServer(oldNoteText, newNoteText) {
         console.log(data);
     });
 }
-
+//Added everything below this for collaboration.
 function fetchNotes() {
     fetch('/get_notes')
         .then(response => response.json())
