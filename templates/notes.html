@@ -17,7 +17,7 @@
             <label for="start">Start Date:</label>
             <input type="date" id="start" name="start" class="feedback-input"><br>
 
-<<<<<<< HEAD
+
             <label for="end">End Date:</label>
             <input type="date" id="end" name="end" class="feedback-input"><br>
         </div>
@@ -30,10 +30,8 @@
             <input type="time" id="endTime" name="endTime" class="feedback-input"><br>
         </div>
 
-=======
         <label for="end">End Date and Time:</label>
         <input type="datetime-local" id="end" name="end" class="feedback-input"><br>
->>>>>>> main
         <label for="category">Category:</label>
         <select id="category" name="category" class="feedback-input">
             <option value="class">Class</option>
@@ -66,8 +64,6 @@
             calendarInputs.style.display = 'none';
         }
     });
-
-<<<<<<< HEAD
     document.getElementById('useAiSuggestion').addEventListener('change', function() {
         var timeInputs = document.getElementById('timeInputs');
         if (this.checked) {
@@ -76,9 +72,6 @@
             timeInputs.style.display = 'block';
         }
     });
-</script>
-{% endblock %}
-=======
     document.getElementById('inviteCollaboratorBtn').addEventListener('click', function() {
         const invitee = document.getElementById('inviteeInput').value;
         inviteCollaborator(invitee);
@@ -99,4 +92,3 @@
 </script>
 <script src=static/js/app.js></script>
 {% endblock %}
->>>>>>> main
