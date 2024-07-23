@@ -160,12 +160,10 @@ def generate_chat_response(events, summary, category, start_date, end_date):
     prompt = f"""
     You are an intelligent assistant. Here are the existing events in the user's calendar:
     {events_summary}
-
     The user wants to add a new event with the following details:
     Summary: {summary}
     Category: {category}
     Date: {start_date} to {end_date}
-
     The event should be scheduled during regular hours (8 AM to 10 PM) and should be realistic for a task like '{summary}', which usually takes about 1-2 hours.
     Please suggest the optimal start and end time for this new event based on the user's current schedule and the category of the event.
     Return the format in the format: 'Start Time: 00:00', and then a new line with 'End Time: 00:00', with the zeroes seen in the example acting as placeholders.
