@@ -13,11 +13,21 @@
         <label for="summary">Event Title:</label>
         <input type="text" name="summary" id="summary" class="feedback-input"><br>
 
-        <label for="start">Start Date and Time:</label>
-        <input type="datetime-local" id="start" name="start" class="feedback-input"><br>
+        <div id="dateInputs">
+            <label for="start">Start Date:</label>
+            <input type="date" id="start" name="start" class="feedback-input"><br>
 
-        <label for="end">End Date and Time:</label>
-        <input type="datetime-local" id="end" name="end" class="feedback-input"><br>
+            <label for="end">End Date:</label>
+            <input type="date" id="end" name="end" class="feedback-input"><br>
+        </div>
+
+        <div id="timeInputs">
+            <label for="startTime">Start Time:</label>
+            <input type="time" id="startTime" name="startTime" class="feedback-input"><br>
+
+            <label for="endTime">End Time:</label>
+            <input type="time" id="endTime" name="endTime" class="feedback-input"><br>
+        </div>
 
         <label for="category">Category:</label>
         <select id="category" name="category" class="feedback-input">
@@ -42,6 +52,15 @@
             calendarInputs.style.display = 'block';
         } else {
             calendarInputs.style.display = 'none';
+        }
+    });
+
+    document.getElementById('useAiSuggestion').addEventListener('change', function() {
+        var timeInputs = document.getElementById('timeInputs');
+        if (this.checked) {
+            timeInputs.style.display = 'none';
+        } else {
+            timeInputs.style.display = 'block';
         }
     });
 </script>
