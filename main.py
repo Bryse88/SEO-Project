@@ -122,9 +122,7 @@ def authorized():
         )
     session['google_token'] = (response['access_token'], '')
     return redirect(url_for('notes'))
-# @app.route('/create_event_form')
-# def create_event_form():
-#     return redirect(url_for(''))
+    
 @app.route('/create_event', methods=['POST'])
 def create_event():
     description = request.form['description']
