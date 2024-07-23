@@ -7,7 +7,6 @@ from googleapiclient.discovery import build
 from forms import RegistrationForm
 from flask_behind_proxy import FlaskBehindProxy
 from flask_bootstrap import Bootstrap
-from flask_sqlalchemy import SQLAlchemy
 import secrets
 
 load_dotenv()
