@@ -16,9 +16,6 @@ app = Flask(__name__)
 bootstrap = Bootstrap(app)
 proxied = FlaskBehindProxy(app)
 app.config['SECRET_KEY'] = secrets.token_hex(16)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///collaboration.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
 oauth = OAuth(app)
 google = oauth.remote_app(
