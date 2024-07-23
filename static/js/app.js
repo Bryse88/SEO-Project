@@ -130,19 +130,52 @@ function fetchNotes() {
             data.notes.forEach(note => addNoteToList(note.text, note.author));
         });
 }
-function inviteCollaborator(invitee) {
-    fetch('/invite_collaborator', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ invitee: invitee })
-    }).then(response => response.json())
-    .then(data => {
-        console.log(data);
+// function inviteCollaborator(invitee) {
+//     fetch('/invite_collaborator', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({ invitee: invitee })
+//     }).then(response => response.json())
+//     .then(data => {
+//         console.log(data);
+//     });
+// }
+    document.getElementById('publishToCalendar').addEventListener('change', function() {
+        var calendarInputs = document.getElementById('calendarInputs');
+        if (this.checked) {
+            calendarInputs.style.display = 'block';
+        } else {
+            calendarInputs.style.display = 'none';
+        }
     });
-}
 
+    document.getElementById('useAiSuggestion').addEventListener('change', function() {
+        var timeInputs = document.getElementById('timeInputs');
+        if (this.checked) {
+            timeInputs.style.display = 'none';
+        } else {
+            timeInputs.style.display = 'block';
+        }
+    });
+    document.getElementById('inviteCollaboratorBtn').addEventListener('click', function() {
+        const invitee = document.getElementById('inviteeInput').value;
+        inviteCollaborator(invitee);
+    });
+
+    function inviteCollaborator(invitee) {
+        fetch('/invite_collaborator', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ invitee: invitee })
+        }).then(response => response.json())
+        .then(data => {
+            console.log(data);
+        });
+    }
 
 window.onload = function() {
     fetch('/get_notes')
