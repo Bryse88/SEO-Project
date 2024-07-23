@@ -1,5 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///collaboration.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
