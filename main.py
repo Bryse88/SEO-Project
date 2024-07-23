@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, redirect, url_for, session, request, render_template, flash
+from flask import Flask, redirect, url_for, session, request, render_template, flash, jsonify
 from flask_oauthlib.client import OAuth
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
@@ -8,8 +8,13 @@ import openai
 from forms import RegistrationForm
 from flask_behind_proxy import FlaskBehindProxy
 from flask_bootstrap import Bootstrap
+<<<<<<< HEAD
 import secrets
 import logging
+=======
+from flask_cors import CORS
+import secrets
+>>>>>>> main
 
 load_dotenv()
 
@@ -17,10 +22,18 @@ load_dotenv()
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
+<<<<<<< HEAD
+=======
+CORS(app)
+>>>>>>> main
 bootstrap = Bootstrap(app)
 proxied = FlaskBehindProxy(app)
 app.config['SECRET_KEY'] = secrets.token_hex(16)
 oauth = OAuth(app)
+
+# In-memory notes storage for simplicity
+notes_storage = []
+
 google = oauth.remote_app(
     'google',
     consumer_key=os.getenv('GOOGLE_CLIENT_ID'),
@@ -36,6 +49,7 @@ google = oauth.remote_app(
     authorize_url='https://accounts.google.com/o/oauth2/auth',
 )
 
+<<<<<<< HEAD
 # Retrieve the API key from the environment variable
 my_api_key = os.getenv('OPENAI_API_KEY')
 
@@ -47,6 +61,28 @@ CATEGORY_COLORS = {
     'break': '5',  # Yellow
     'personal': '6',  # Orange
 }
+=======
+
+@app.route('/add_note', methods=['POST'])
+def add_note():
+    note = request.json.get('note')
+    if note:
+        notes_storage.append(note)
+        return jsonify({'status': 'success', 'note': note}), 201
+    return jsonify({'status': 'failure', 'message': 'Note is required'}), 400
+
+@app.route('/delete_note', methods=['POST'])
+def delete_note():
+    note = request.json.get('note')
+    if note in notes_storage:
+        notes_storage.remove(note)
+        return jsonify({'status': 'success', 'note': note}), 200
+    return jsonify({'status': 'failure', 'message': 'Note not found'}), 400
+
+@app.route('/get_notes', methods=['GET'])
+def get_notes():
+    return jsonify({'notes': notes_storage}), 200
+>>>>>>> main
 
 @app.route('/')
 def index():
@@ -153,10 +189,15 @@ def create_event():
             return redirect(url_for('notes'))
 
     return redirect(url_for('notes'))
+<<<<<<< HEAD
 
 def generate_chat_response(events, summary, category, start_date, end_date):
     events_summary = "\n".join([f"{event['start'].get('dateTime', event['start'].get('date'))} to {event['end'].get('dateTime', event['end'].get('date'))}: {event['summary']}" for event in events])
     
+=======
+def get_openai_suggestion(events, summary, category):
+    events_summary = "\n".join([f"{event['start']['dateTime']} to {event['end']['dateTime']}: {event['summary']}" for event in events])
+>>>>>>> main
     prompt = f"""
     You are an intelligent assistant. Here are the existing events in the user's calendar:
     {events_summary}
@@ -164,6 +205,7 @@ def generate_chat_response(events, summary, category, start_date, end_date):
     The user wants to add a new event with the following details:
     Summary: {summary}
     Category: {category}
+<<<<<<< HEAD
     Date: {start_date} to {end_date}
 
     The event should be scheduled during regular hours (8 AM to 10 PM) and should be realistic for a task like '{summary}', which usually takes about 1-2 hours.
@@ -204,9 +246,31 @@ def parse_suggested_time(text):
         logging.error(f"Error parsing suggested time: {e}")
         return {'startTime': '00:00', 'endTime': '23:59'}  # Default fallback times
 
+=======
+
+    Please suggest the optimal start and end time for this new event based on the user's current schedule and the category of the event.
+    """
+    
+    response = openai.Completion.create(
+        engine="davinci",
+        prompt=prompt,
+        max_tokens=150
+    )
+    
+    suggested_time_text = response.choices[0].text.strip()
+    suggested_time = parse_suggested_time(suggested_time_text)
+    return {'suggested_time': suggested_time}
+
+def parse_suggested_time(text):
+    # A simple parser to extract start and end time from OpenAI's response
+    lines = text.split("\n")
+    start = lines[0].split("Start: ")[1].strip()
+    end = lines[1].split("End: ")[1].strip()
+    return {'start': start, 'end': end}
+>>>>>>> main
 @google.tokengetter
 def get_google_oauth_token():
     return session.get('google_token')
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=5050)
+    app.run(debug=True, host="0.0.0.0", port=5000)
