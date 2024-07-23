@@ -4,9 +4,7 @@ from flask import Flask, redirect, url_for, session, request, render_template, f
 from flask_oauthlib.client import OAuth
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from openai import OpenAI
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+import openai
 from forms import RegistrationForm
 from flask_behind_proxy import FlaskBehindProxy
 from flask_bootstrap import Bootstrap
@@ -38,6 +36,8 @@ google = oauth.remote_app(
     authorize_url='https://accounts.google.com/o/oauth2/auth',
 )
 
+# Retrieve the API key from the environment variable
+my_api_key = os.getenv('OPENAI_API_KEY')
 
 CATEGORY_COLORS = {
     'class': '1',  # Light blue
@@ -81,12 +81,12 @@ def logout():
 @app.route('/oauth2callback')
 def authorized():
     response = google.authorized_response()
-    if response is None or response.access_token is None:
+    if response is None or response.get('access_token') is None:
         return 'Access denied: reason={} error={}'.format(
             request.args['error_reason'],
             request.args['error_description']
         )
-    session['google_token'] = (response.access_token, '')
+    session['google_token'] = (response['access_token'], '')
     return redirect(url_for('notes'))
 
 @app.route('/create_event', methods=['POST'])
@@ -156,7 +156,7 @@ def create_event():
 
 def generate_chat_response(events, summary, category, start_date, end_date):
     events_summary = "\n".join([f"{event['start'].get('dateTime', event['start'].get('date'))} to {event['end'].get('dateTime', event['end'].get('date'))}: {event['summary']}" for event in events])
-
+    
     prompt = f"""
     You are an intelligent assistant. Here are the existing events in the user's calendar:
     {events_summary}
@@ -166,18 +166,22 @@ def generate_chat_response(events, summary, category, start_date, end_date):
     Category: {category}
     Date: {start_date} to {end_date}
 
+    The event should be scheduled during regular hours (8 AM to 10 PM) and should be realistic for a task like '{summary}', which usually takes about 1-2 hours.
     Please suggest the optimal start and end time for this new event based on the user's current schedule and the category of the event.
+    Return the format in the format: 'Start Time: 00:00', and then a new line with 'End Time: 00:00', with the zeroes seen in the example acting as placeholders.
+    I only want the output specified to be printed, and nothing else. 
     """
-
+    
     try:
-        response = client.chat.completions.create(model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are an intelligent assistant."},
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=150)
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are an intelligent assistant."},
+                {"role": "user", "content": prompt}
+            ],
+        )
         logging.debug(f"OpenAI response: {response}")
-        return response.choices[0].message.content.strip()
+        return response.choices[0].message['content'].strip()
     except Exception as e:
         logging.error(f"Error calling OpenAI API: {e}")
         return "Start Time: 00:00\nEnd Time: 23:59"  # Default fallback times
@@ -186,8 +190,15 @@ def parse_suggested_time(text):
     # A simple parser to extract start and end time from OpenAI's response
     try:
         lines = text.split("\n")
-        start_time = lines[0].split("Start Time: ")[1].strip()
-        end_time = lines[1].split("End Time: ")[1].strip()
+        start_time = None
+        end_time = None
+        for line in lines:
+            if "Start Time:" in line:
+                start_time = line.split("Start Time: ")[1].strip()
+            if "End Time:" in line:
+                end_time = line.split("End Time: ")[1].strip()
+        if not start_time or not end_time:
+            raise ValueError("Could not parse times from response.")
         return {'startTime': start_time, 'endTime': end_time}
     except Exception as e:
         logging.error(f"Error parsing suggested time: {e}")
