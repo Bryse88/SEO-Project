@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 {% block title %}Notes{% endblock %}
 {% block content %}
-
 <h1>Notes App</h1>
 <form id="noteForm">
     <div>
@@ -13,50 +12,16 @@
     <div id="calendarInputs" style="display: none;">
         <label for="summary">Event Title:</label>
         <input type="text" name="summary" id="summary" class="feedback-input"><br>
-
-        <label for="start">Start Date and Time:</label>
-        <input type="datetime-local" id="start" name="start" class="feedback-input"><br>
-
-        <label for="end">End Date and Time:</label>
-        <input type="datetime-local" id="end" name="end" class="feedback-input"><br>
     </div>
     <button type="submit">Add Note</button>
 </form>
 
-<button id="inviteCollaboratorBtn">Invite Collaborator</button>
-<input type="text" id="inviteeInput" placeholder="Enter email to invite">
+<div id="inviteContainer">
+    <input type="text" id="inviteeInput" placeholder="Enter email to invite">
+    <button id="inviteCollaboratorBtn">Invite Collaborator</button>
+</div>
 
 <ul id="notesList"></ul>
 
-<!--Added new script below for collaboration-->
-
-<script>
-    document.getElementById('publishToCalendar').addEventListener('change', function() {
-        var calendarInputs = document.getElementById('calendarInputs');
-        if (this.checked) {
-            calendarInputs.style.display = 'block';
-        } else {
-            calendarInputs.style.display = 'none';
-        }
-    });
-
-    document.getElementById('inviteCollaboratorBtn').addEventListener('click', function() {
-        const invitee = document.getElementById('inviteeInput').value;
-        inviteCollaborator(invitee);
-    });
-
-    function inviteCollaborator(invitee) {
-        fetch('/invite_collaborator', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ invitee: invitee })
-        }).then(response => response.json())
-        .then(data => {
-            console.log(data);
-        });
-    }
-</script>
 <script src=static/js/app.js></script>
 {% endblock %}
