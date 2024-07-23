@@ -1,5 +1,9 @@
 # SmartScheduler: AI-Powered Collaborative Calendar and Task Management
 
+## Contributing:
+
+Bryson Turner(FullStack), Lap Pham (Frontend), Adam Bataineh(backend) 
+
 ## Table of Contents
 1. [Overview](#overview)
 2. [Features](#features)
@@ -11,10 +15,6 @@
 4. [Frameworks and Libraries](#frameworks-and-libraries)
 5. [Languages Used](#languages-used)
 6. [Collaboration Features](#collaboration-features)
-
-## Contributing:
-
-Bryson Turner(FullStack), Lap Pham (Frontend), Adam Bataineh(backend) 
 
 ## Overview
 
