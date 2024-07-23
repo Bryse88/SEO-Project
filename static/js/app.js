@@ -1,5 +1,3 @@
-//Note: I changed the button variable to be three different buttons, saveButton, editButton, and deleteButton for styling in CSS
-
 document.getElementById('noteForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -14,6 +12,7 @@ document.getElementById('noteForm').addEventListener('submit', function(e) {
 });
 
 let noteId = 0;
+let isEditing = false; // Flag to track editing state
 
 function addNoteToList(noteText, author) {
     const notesList = document.getElementById('notesList');
@@ -31,27 +30,28 @@ function addNoteToList(noteText, author) {
     const buttonsDiv = document.createElement('div');
     buttonsDiv.classList.add('buttonsDiv');
 
-    const deleteButton = document.createElement('deleteButton'); // Here for example
+    const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.id = `deleteButton-${noteId}`;
-    deleteButton.classList.add('deleteButton'); // Add this line
+    deleteButton.classList.add('deleteButton');
     deleteButton.addEventListener('click', function() {
         deleteNoteFromServer(noteText);
         li.remove();
     });
 
-    const editButton = document.createElement('editButton');
+    const editButton = document.createElement('button');
     editButton.textContent = 'Edit';
     editButton.id = `editButton-${noteId}`;
-    editButton.classList.add('editButton'); // Add this line
+    editButton.classList.add('editButton');
     editButton.addEventListener('click', function() {
+        isEditing = true; // Set editing flag to true
         noteSpan.style.display = 'none';
         noteInput.style.display = 'inline-block';
         editButton.style.display = 'none';
         saveButton.style.display = 'inline-block';
     });
 
-    const saveButton = document.createElement('saveButton');
+    const saveButton = document.createElement('button');
     saveButton.textContent = 'Save';
     saveButton.classList.add('saveButton');
     saveButton.style.display = 'none';
@@ -66,6 +66,7 @@ function addNoteToList(noteText, author) {
         noteInput.style.display = 'none';
         editButton.style.display = 'inline-block';
         saveButton.style.display = 'none';
+        isEditing = false; // Set editing flag to false
     });
 
     li.appendChild(noteSpan);
@@ -117,15 +118,17 @@ function updateNoteOnServer(oldNoteText, newNoteText) {
         console.log(data);
     });
 }
-//Added everything below this for collaboration.
+
 function fetchNotes() {
-    fetch('/get_notes')
-        .then(response => response.json())
-        .then(data => {
-            const notesList = document.getElementById('notesList');
-            notesList.innerHTML = ''; // Clear existing notes
-            data.notes.forEach(note => addNoteToList(note.text, note.author));
-        });
+    if (!isEditing) { // Only fetch notes if not editing
+        fetch('/get_notes')
+            .then(response => response.json())
+            .then(data => {
+                const notesList = document.getElementById('notesList');
+                notesList.innerHTML = ''; // Clear existing notes
+                data.notes.forEach(note => addNoteToList(note.text, note.author));
+            });
+    }
 }
 
 // Fetch notes initially and then periodically
