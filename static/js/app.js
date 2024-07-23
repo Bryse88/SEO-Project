@@ -1,3 +1,5 @@
+//Note: I changed the button variable to be three different buttons, saveButton, editButton, and deleteButton for styling in CSS
+
 document.getElementById('noteForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -5,22 +7,21 @@ document.getElementById('noteForm').addEventListener('submit', function(e) {
     const noteText = noteInput.value;
 
     if (noteText.trim()) {
-        addNoteToList(noteText);
+        // addNoteToList(noteText, 'You');
         saveNoteToServer(noteText);
         noteInput.value = '';
     }
 });
 
-
 let noteId = 0;
 
-function addNoteToList(noteText) {
+function addNoteToList(noteText, author) {
     const notesList = document.getElementById('notesList');
     const li = document.createElement('li');
 
     const noteSpan = document.createElement('p');
-    noteSpan.textContent = noteText;
-    noteSpan.classList.add('noteSpan'); 
+    noteSpan.textContent = `${noteText} (by ${author})`;
+    noteSpan.classList.add('noteSpan');
 
     const noteInput = document.createElement('input');
     noteInput.type = 'text';
@@ -30,10 +31,10 @@ function addNoteToList(noteText) {
     const buttonsDiv = document.createElement('div');
     buttonsDiv.classList.add('buttonsDiv');
 
-    const deleteButton = document.createElement('deleteButton');
+    const deleteButton = document.createElement('deleteButton'); // Here for example
     deleteButton.textContent = 'Delete';
     deleteButton.id = `deleteButton-${noteId}`;
-    deleteButton.classList.add('deleteButton');
+    deleteButton.classList.add('deleteButton'); // Add this line
     deleteButton.addEventListener('click', function() {
         deleteNoteFromServer(noteText);
         li.remove();
@@ -42,7 +43,7 @@ function addNoteToList(noteText) {
     const editButton = document.createElement('editButton');
     editButton.textContent = 'Edit';
     editButton.id = `editButton-${noteId}`;
-    editButton.classList.add('editButton');
+    editButton.classList.add('editButton'); // Add this line
     editButton.addEventListener('click', function() {
         noteSpan.style.display = 'none';
         noteInput.style.display = 'inline-block';
@@ -58,7 +59,7 @@ function addNoteToList(noteText) {
         const newNoteText = noteInput.value;
         if (newNoteText && newNoteText.trim() !== '' && newNoteText !== noteText) {
             updateNoteOnServer(noteText, newNoteText);
-            noteSpan.textContent = newNoteText;
+            noteSpan.textContent = `${newNoteText} (by ${author})`;
             noteText = newNoteText; 
         }
         noteSpan.style.display = 'inline-block';
@@ -117,10 +118,6 @@ function updateNoteOnServer(oldNoteText, newNoteText) {
     });
 }
 //Added everything below this for collaboration.
-document.getElementById('inviteCollaboratorBtn').addEventListener('click', function() {
-    const invitee = document.getElementById('inviteeInput').value;
-    inviteCollaborator(invitee);
-});
 function fetchNotes() {
     fetch('/get_notes')
         .then(response => response.json())

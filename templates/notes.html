@@ -2,7 +2,7 @@
 {% block title %}Notes{% endblock %}
 {% block content %}
 <h1>Notes App</h1>
-<form id="noteForm">
+<form id="noteForm" action="{{ url_for('create_event') }}" method="post">
     <div>
         <textarea id="noteInput" name="description" placeholder="Write your note here..." required></textarea>
         <br>
@@ -28,6 +28,7 @@
             <label for="endTime">End Time:</label>
             <input type="time" id="endTime" name="endTime" class="feedback-input"><br>
         </div>
+
         <label for="category">Category:</label>
         <select id="category" name="category" class="feedback-input">
             <option value="class">Class</option>
@@ -43,12 +44,24 @@
     </div>
     <button type="submit">Add Note</button>
 </form>
-
-<button id="inviteCollaboratorBtn">Invite Collaborator</button>
-<input type="text" id="inviteeInput" placeholder="Enter email to invite">
-
 <ul id="notesList"></ul>
+<script>
+    document.getElementById('publishToCalendar').addEventListener('change', function() {
+        var calendarInputs = document.getElementById('calendarInputs');
+        if (this.checked) {
+            calendarInputs.style.display = 'block';
+        } else {
+            calendarInputs.style.display = 'none';
+        }
+    });
 
-<!--Added new script below for collaboration-->
-{%endblock content%}
-
+    document.getElementById('useAiSuggestion').addEventListener('change', function() {
+        var timeInputs = document.getElementById('timeInputs');
+        if (this.checked) {
+            timeInputs.style.display = 'none';
+        } else {
+            timeInputs.style.display = 'block';
+        }
+    });
+</script>
+{% endblock %}
