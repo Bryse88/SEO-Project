@@ -67,7 +67,6 @@
         }
     });
 
-<<<<<<< HEAD
     document.getElementById('useAiSuggestion').addEventListener('change', function() {
         var timeInputs = document.getElementById('timeInputs');
         if (this.checked) {
@@ -78,25 +77,3 @@
     });
 </script>
 {% endblock %}
-=======
-    document.getElementById('inviteCollaboratorBtn').addEventListener('click', function() {
-        const invitee = document.getElementById('inviteeInput').value;
-        inviteCollaborator(invitee);
-    });
-
-    function inviteCollaborator(invitee) {
-        fetch('/invite_collaborator', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ invitee: invitee })
-        }).then(response => response.json())
-        .then(data => {
-            console.log(data);
-        });
-    }
-</script>
-<script src=static/js/app.js></script>
-{% endblock %}
->>>>>>> main
