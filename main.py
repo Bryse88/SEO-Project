@@ -10,6 +10,8 @@ from flask_behind_proxy import FlaskBehindProxy
 from flask_bootstrap import Bootstrap
 import secrets
 import logging
+from datetime import datetime
+
 
 load_dotenv()
 
@@ -111,13 +113,16 @@ def create_event():
             try:
                 credentials = Credentials(session['google_token'][0])
                 service = build('calendar', 'v3', credentials=credentials)
-                events_result = service.events().list(calendarId='primary', maxResults=10, singleEvents=True,
-                                                      orderBy='startTime').execute()
+                events_result = service.events().list(calendarId='primary', timeMin=f"{start_date}T00:00:00Z", timeMax=f"{end_date}T23:59:59Z", singleEvents=True, orderBy='startTime').execute()
                 events = events_result.get('items', [])
 
-                openai_response = generate_chat_response(events, summary, category, start_date, end_date)
+                openai_response = generate_chat_response(events, summary, category, description, start_date, end_date)
+                logging.debug(f"AI response: {openai_response}")
                 suggested_time = parse_suggested_time(openai_response)
                 start_time, end_time = suggested_time['startTime'], suggested_time['endTime']
+                if not validate_times(start_time, end_time, events):
+                    flash('Suggested times overlap with existing events. Please adjust manually.', 'error')
+                    return redirect(url_for('notes'))
                 flash(f'Suggested time by AI: Start: {start_time}, End: {end_time}', 'info')
 
             except Exception as e:
@@ -125,8 +130,8 @@ def create_event():
                 flash(f'An error occurred while fetching AI suggestion: {e}', 'error')
                 return redirect(url_for('notes'))
 
-        start = f"{start_date}T{start_time}:00"
-        end = f"{end_date}T{end_time}:00"
+        start = f"{start_date}T{start_time}"
+        end = f"{end_date}T{end_time}"
         event = {
             'summary': summary,
             'description': description,
@@ -154,22 +159,36 @@ def create_event():
 
     return redirect(url_for('notes'))
 
-def generate_chat_response(events, summary, category, start_date, end_date):
+def validate_times(start_time, end_time, events):
+    start = datetime.strptime(start_time, '%H:%M:%S')
+    end = datetime.strptime(end_time, '%H:%M:%S')
+    for event in events:
+        event_start = datetime.strptime(event['start']['dateTime'][11:19], '%H:%M:%S')
+        event_end = datetime.strptime(event['end']['dateTime'][11:19], '%H:%M:%S')
+        if start < event_end and end > event_start:
+            return False
+    return True
+
+
+
+
+def generate_chat_response(events, summary, category, description, start_date, end_date):
     events_summary = "\n".join([f"{event['start'].get('dateTime', event['start'].get('date'))} to {event['end'].get('dateTime', event['end'].get('date'))}: {event['summary']}" for event in events])
     
     prompt = f"""
-    You are an intelligent assistant. Here are the existing events in the user's calendar:
+    You are an intelligent assistant. Here are the existing events in the user's calendar for the date {start_date}:
     {events_summary}
 
     The user wants to add a new event with the following details:
-    Summary: {summary}
+    Title: {summary}
+    Description: {description}
     Category: {category}
     Date: {start_date} to {end_date}
 
     The event should be scheduled during regular hours (8 AM to 10 PM) and should be realistic for a task like '{summary}', which usually takes about 1-2 hours.
+    Ensure that the new event does not overlap with any existing events in the user's calendar.
     Please suggest the optimal start and end time for this new event based on the user's current schedule and the category of the event.
-    Return the format in the format: 'Start Time: 00:00', and then a new line with 'End Time: 00:00', with the zeroes seen in the example acting as placeholders.
-    I only want the output specified to be printed, and nothing else. 
+    Return the times in the format: 'Start Time: HH:MM AM/PM', followed by a new line with 'End Time: HH:MM AM/PM'.
     """
     
     try:
@@ -186,23 +205,28 @@ def generate_chat_response(events, summary, category, start_date, end_date):
         logging.error(f"Error calling OpenAI API: {e}")
         return "Start Time: 00:00\nEnd Time: 23:59"  # Default fallback times
 
-def parse_suggested_time(text):
-    # A simple parser to extract start and end time from OpenAI's response
+
+
+def parse_suggested_time(ai_response):
     try:
-        lines = text.split("\n")
-        start_time = None
-        end_time = None
-        for line in lines:
-            if "Start Time:" in line:
-                start_time = line.split("Start Time: ")[1].strip()
-            if "End Time:" in line:
-                end_time = line.split("End Time: ")[1].strip()
-        if not start_time or not end_time:
-            raise ValueError("Could not parse times from response.")
+        lines = ai_response.strip().split('\n')
+        # Locate the lines containing "Start Time" and "End Time"
+        start_time_line = next(line for line in lines if "Start Time" in line)
+        end_time_line = next(line for line in lines if "End Time" in line)
+        start_time_str = start_time_line.split(": ")[1].strip().replace('**', '')
+        end_time_str = end_time_line.split(": ")[1].strip().replace('**', '')
+
+        # Ensure correct time format
+        start_time = datetime.strptime(start_time_str, '%I:%M %p').strftime('%H:%M:%S')
+        end_time = datetime.strptime(end_time_str, '%I:%M %p').strftime('%H:%M:%S')
+
         return {'startTime': start_time, 'endTime': end_time}
     except Exception as e:
         logging.error(f"Error parsing suggested time: {e}")
-        return {'startTime': '00:00', 'endTime': '23:59'}  # Default fallback times
+        return {'startTime': '00:00:00', 'endTime': '23:59:59'}  # Default fallback times
+
+
+
 
 @google.tokengetter
 def get_google_oauth_token():
