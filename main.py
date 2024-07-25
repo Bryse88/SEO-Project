@@ -10,8 +10,7 @@ from flask_behind_proxy import FlaskBehindProxy
 from flask_bootstrap import Bootstrap
 import secrets
 import logging
-from datetime import datetime
-
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -23,6 +22,7 @@ bootstrap = Bootstrap(app)
 proxied = FlaskBehindProxy(app)
 app.config['SECRET_KEY'] = secrets.token_hex(16)
 oauth = OAuth(app)
+
 google = oauth.remote_app(
     'google',
     consumer_key=os.getenv('GOOGLE_CLIENT_ID'),
@@ -99,6 +99,9 @@ def create_event():
     publish_to_calendar = 'publishToCalendar' in request.form
     use_ai_suggestion = 'useAiSuggestion' in request.form
 
+    # Identifier for events created from the webpage
+    identifier = "CreatedFromWebpage"
+
     if publish_to_calendar:
         start_date = request.form['start']
         end_date = request.form['end']
@@ -120,9 +123,6 @@ def create_event():
                 logging.debug(f"AI response: {openai_response}")
                 suggested_time = parse_suggested_time(openai_response)
                 start_time, end_time = suggested_time['startTime'], suggested_time['endTime']
-                if not validate_times(start_time, end_time, events):
-                    flash('Suggested times overlap with existing events. Please adjust manually.', 'error')
-                    return redirect(url_for('notes'))
                 flash(f'Suggested time by AI: Start: {start_time}, End: {end_time}', 'info')
 
             except Exception as e:
@@ -130,11 +130,15 @@ def create_event():
                 flash(f'An error occurred while fetching AI suggestion: {e}', 'error')
                 return redirect(url_for('notes'))
 
-        start = f"{start_date}T{start_time}"
-        end = f"{end_date}T{end_time}"
+        if not validate_time(start_time, end_time):
+            flash('Event time must be between 8 AM and 10 PM and not overlap with existing events.', 'error')
+            return redirect(url_for('notes'))
+
+        start = f"{start_date}T{format_time(start_time)}"
+        end = f"{end_date}T{format_time(end_time)}"
         event = {
             'summary': summary,
-            'description': description,
+            'description': f"{description}\n{identifier}",  # Add identifier to description
             'start': {
                 'dateTime': start,
                 'timeZone': 'America/Chicago'
@@ -159,17 +163,22 @@ def create_event():
 
     return redirect(url_for('notes'))
 
-def validate_times(start_time, end_time, events):
-    start = datetime.strptime(start_time, '%H:%M:%S')
-    end = datetime.strptime(end_time, '%H:%M:%S')
-    for event in events:
-        event_start = datetime.strptime(event['start']['dateTime'][11:19], '%H:%M:%S')
-        event_end = datetime.strptime(event['end']['dateTime'][11:19], '%H:%M:%S')
-        if start < event_end and end > event_start:
+def format_time(time_str):
+    """Ensure the time string is in '%H:%M:%S' format."""
+    if len(time_str) == 5:
+        time_str += ":00"
+    return time_str
+
+def validate_time(start_time, end_time):
+    try:
+        start_dt = datetime.strptime(format_time(start_time), '%H:%M:%S')
+        end_dt = datetime.strptime(format_time(end_time), '%H:%M:%S')
+        if start_dt.time() < datetime.strptime("08:00:00", '%H:%M:%S').time() or end_dt.time() > datetime.strptime("22:00:00", '%H:%M:%S').time():
             return False
-    return True
-
-
+        return True
+    except Exception as e:
+        logging.error(f"Error validating time: {e}")
+        return False
 
 
 def generate_chat_response(events, summary, category, description, start_date, end_date):
@@ -206,7 +215,6 @@ def generate_chat_response(events, summary, category, description, start_date, e
         return "Start Time: 00:00\nEnd Time: 23:59"  # Default fallback times
 
 
-
 def parse_suggested_time(ai_response):
     try:
         lines = ai_response.strip().split('\n')
@@ -226,11 +234,39 @@ def parse_suggested_time(ai_response):
         return {'startTime': '00:00:00', 'endTime': '23:59:59'}  # Default fallback times
 
 
-
-
 @google.tokengetter
 def get_google_oauth_token():
     return session.get('google_token')
+
+@app.route('/completed_notes')
+def completed_notes():
+    identifier = "CreatedFromWebpage"
+    try:
+        credentials = Credentials(session['google_token'][0])
+        service = build('calendar', 'v3', credentials=credentials)
+        now = datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
+        events_result = service.events().list(calendarId='primary', timeMin=now, singleEvents=True, orderBy='startTime').execute()
+        events = events_result.get('items', [])
+
+        # Filter events with the specific identifier
+        completed_events = [event for event in events if identifier in event.get('description', '')]
+        return render_template('completed_notes.html', events=completed_events, category_colors=CATEGORY_COLORS)
+    except Exception as e:
+        logging.error(f"Error retrieving events: {e}")
+        flash(f'An error occurred: {e}', 'error')
+        return redirect(url_for('index'))
+
+
+# Add this filter to your Flask app
+@app.template_filter('format_datetime')
+def format_datetime(value):
+    """Format a datetime string to a more readable format"""
+    if 'T' in value:
+        dt = datetime.fromisoformat(value.replace('Z', '+00:00'))
+        return dt.strftime('%A, %B %d, %Y at %I:%M %p')
+    else:
+        dt = datetime.fromisoformat(value)
+        return dt.strftime('%A, %B %d, %Y')
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5050)

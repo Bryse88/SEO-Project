@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Completed Notes
+{% endblock %}
+
+{% block styles %}
+<style>
+    .card {
+        margin-bottom: 1rem;
+    }
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .card-text {
+        font-size: 1rem;
+        color: black;
+    }
+    .card-header {
+        color: white;
+        background-color: #007bff; /* Set the header color to blue */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Completed Notes</h1>
+    <div class="row">
+        {% for event in events %}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    {{ event['summary'] }}
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ event['summary'] }}</h5>
+                    <p class="card-text">
+                        <strong>Start:</strong> {{ event['start'].get('dateTime', event['start'].get('date')) | format_datetime }}<br>
+                        <strong>End:</strong> {{ event['end'].get('dateTime', event['end'].get('date')) | format_datetime }}<br>
+                        <strong>Description:</strong> {{ event['description'].replace("CreatedFromWebpage", "") }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}
